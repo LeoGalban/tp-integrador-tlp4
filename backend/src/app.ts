@@ -6,6 +6,7 @@ import { errorHandler } from "./middlewares/errorHandler.ts";
 // Los routers ya armados que recibe la app (se crean en main.ts)
 export interface AppRouters {
   authRouter: Router;
+  userRouter: Router;
 }
 
 // Crea y configura el servidor Express
@@ -21,6 +22,7 @@ export function createApp(routers: AppRouters) {
   });
 
   app.use("/api/auth", routers.authRouter);
+  app.use("/api/users", routers.userRouter);
 
   // Siempre al final: atrapa los errores de todas las rutas anteriores
   app.use(errorHandler);
