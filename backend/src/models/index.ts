@@ -1,6 +1,7 @@
 import { Role } from "./Role.ts";
 import { Permission } from "./Permission.ts";
 import { User } from "./User.ts";
+import { Product } from "./Product.ts";
 
 // Relaciones entre tablas
 
@@ -11,4 +12,4 @@ Role.belongsToMany(Permission, { through: "role_permissions", as: "permissions" 
 // Cada usuario pertenece a un rol
 User.belongsTo(Role, { foreignKey: "roleId", as: "role" });
 
-export { Role, Permission, User };
+export { Role, Permission, User, Product };
