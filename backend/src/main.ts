@@ -1,5 +1,6 @@
 import { env } from "./config/env.ts";
 import { DatabaseConnection } from "./database/DatabaseConnection.ts";
+import { seed } from "./database/seed.ts";
 import { createApp } from "./app.ts";
 // Importar los modelos los registra en Sequelize (y define sus relaciones)
 import "./models/index.ts";
@@ -11,8 +12,9 @@ async function main() {
   await db.sequelize.authenticate();
   console.log("Conectado a PostgreSQL");
 
-  // Crea las tablas que falten a partir de los modelos
+  // Crea las tablas que falten a partir de los modelos, y carga los datos iniciales
   await db.sequelize.sync();
+  await seed();
 
   // 2. Crear el servidor y ponerlo a escuchar
   const app = createApp();
