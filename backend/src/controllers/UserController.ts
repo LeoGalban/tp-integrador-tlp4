@@ -1,15 +1,6 @@
 import type { Request, Response } from "express";
-import { HttpError } from "../errors/HttpError.ts";
 import type { UserService } from "../services/UserService.ts";
-
-// Convierte un valor (de la URL o del body) en un id entero positivo, o lanza un 400
-function parseId(value: unknown, field: string): number {
-  const id = Number(value);
-  if (!Number.isInteger(id) || id <= 0) {
-    throw new HttpError(400, `El campo "${field}" debe ser un número entero positivo`);
-  }
-  return id;
-}
+import { getBody, parseId } from "../utils/validation.ts";
 
 // Controller de administración de usuarios: valida la entrada y responde
 export class UserController {
@@ -30,7 +21,7 @@ export class UserController {
   // PATCH /api/users/:id/role   body: { "roleId": 2 }
   assignRole = async (req: Request, res: Response) => {
     const userId = parseId(req.params.id, "id");
-    const body = (req.body ?? {}) as Record<string, unknown>;
+    const body = getBody(req.body);
     const roleId = parseId(body.roleId, "roleId");
 
     // req.user existe porque la ruta pasa antes por authenticate

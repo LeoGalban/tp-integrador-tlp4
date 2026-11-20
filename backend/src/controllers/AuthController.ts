@@ -1,15 +1,7 @@
 import type { Request, Response } from "express";
 import { HttpError } from "../errors/HttpError.ts";
 import type { AuthService } from "../services/AuthService.ts";
-
-// Devuelve el texto si es un string no vacío; si no, lanza un 400
-function requireString(body: Record<string, unknown>, field: string): string {
-  const value = body[field];
-  if (typeof value !== "string" || value.trim() === "") {
-    throw new HttpError(400, `El campo "${field}" es obligatorio`);
-  }
-  return value;
-}
+import { getBody, requireString } from "../utils/validation.ts";
 
 // Controller: recibe la request, valida la entrada y devuelve la respuesta.
 // No tiene lógica de negocio: eso lo hace AuthService.
@@ -22,7 +14,7 @@ export class AuthController {
 
   // Se definen como arrow functions para que "this" funcione al pasarlas a las rutas
   register = async (req: Request, res: Response) => {
-    const body = (req.body ?? {}) as Record<string, unknown>;
+    const body = getBody(req.body);
     const name = requireString(body, "name");
     const email = requireString(body, "email");
     const password = requireString(body, "password");
@@ -39,7 +31,7 @@ export class AuthController {
   };
 
   login = async (req: Request, res: Response) => {
-    const body = (req.body ?? {}) as Record<string, unknown>;
+    const body = getBody(req.body);
     const email = requireString(body, "email");
     const password = requireString(body, "password");
 
