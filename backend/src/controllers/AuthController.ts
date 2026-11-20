@@ -46,4 +46,9 @@ export class AuthController {
     const result = await this.authService.login({ email, password });
     res.json(result);
   };
+
+  // Devuelve el usuario logueado (lo cargó el middleware authenticate)
+  me = async (req: Request, res: Response) => {
+    res.json(req.user);
+  };
 }

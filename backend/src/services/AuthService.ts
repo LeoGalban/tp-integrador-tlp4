@@ -98,6 +98,18 @@ export class AuthService {
     }
   }
 
+  // A partir del token, devuelve el usuario con sus permisos ACTUALES.
+  // Se busca en la base en cada request: si el admin le cambia el rol,
+  // el cambio se aplica sin que el usuario tenga que volver a loguearse.
+  async getUserFromToken(token: string): Promise<UserData> {
+    const { userId } = this.verifyToken(token);
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new HttpError(401, "El usuario del token ya no existe");
+    }
+    return user;
+  }
+
   private createToken(userId: number): string {
     const payload: TokenPayload = { userId };
     return jwt.sign(payload, this.jwtSecret, { expiresIn: "8h" });
