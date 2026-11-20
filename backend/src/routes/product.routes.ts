@@ -15,6 +15,7 @@ export function productRoutes(controller: ProductController, authenticate: Reque
   router.get("/:id", authorize("producto:read"), controller.getById);
   router.post("/", authorize("producto:create"), controller.create);
   router.put("/:id", authorize("producto:update"), controller.update);
+  router.patch("/:id/status", authorize("producto:change-status"), controller.changeStatus);
   router.delete("/:id", authorize("producto:delete"), controller.delete);
 
   return router;

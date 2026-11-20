@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { HttpError } from "../errors/HttpError.ts";
 import type { ProductService } from "../services/ProductService.ts";
 import type { UpdateProductData } from "../repositories/interfaces/IProductRepository.ts";
+import { PRODUCT_STATUSES, isProductStatus } from "../types/product.ts";
 import {
   getBody,
   optionalNonNegativeNumber,
@@ -57,6 +58,18 @@ export class ProductController {
     }
 
     res.json(await this.productService.update(id, data));
+  };
+
+  // PATCH /api/products/:id/status   body: { "status": "SIN_STOCK" }
+  changeStatus = async (req: Request, res: Response) => {
+    const id = parseId(req.params.id, "id");
+    const { status } = getBody(req.body);
+
+    if (!isProductStatus(status)) {
+      throw new HttpError(400, `El estado debe ser uno de: ${PRODUCT_STATUSES.join(", ")}`);
+    }
+
+    res.json(await this.productService.changeStatus(id, status));
   };
 
   // DELETE /api/products/:id
