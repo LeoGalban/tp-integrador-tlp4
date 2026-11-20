@@ -4,6 +4,11 @@ import { seed } from "./database/seed.ts";
 import { createApp } from "./app.ts";
 // Importar los modelos los registra en Sequelize (y define sus relaciones)
 import "./models/index.ts";
+import { UserRepository } from "./repositories/UserRepository.ts";
+import { RoleRepository } from "./repositories/RoleRepository.ts";
+import { AuthService } from "./services/AuthService.ts";
+import { AuthController } from "./controllers/AuthController.ts";
+import { authRoutes } from "./routes/auth.routes.ts";
 
 // Composition root: acá se crean todos los objetos de la aplicación y se conectan entre sí
 async function main() {
@@ -16,8 +21,20 @@ async function main() {
   await db.sequelize.sync();
   await seed();
 
-  // 2. Crear el servidor y ponerlo a escuchar
-  const app = createApp();
+  // 2. Repositorios (único acceso a la base)
+  const userRepository = new UserRepository();
+  const roleRepository = new RoleRepository();
+
+  // 3. Services: reciben los repositorios por constructor (inyección de dependencias)
+  const authService = new AuthService(userRepository, roleRepository, env.jwtSecret);
+
+  // 4. Controllers: reciben los services
+  const authController = new AuthController(authService);
+
+  // 5. Crear el servidor con sus rutas y ponerlo a escuchar
+  const app = createApp({
+    authRouter: authRoutes(authController),
+  });
   app.listen(env.apiPort, () => {
     console.log(`API escuchando en http://localhost:${env.apiPort}/api`);
   });
