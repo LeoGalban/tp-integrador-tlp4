@@ -1,0 +1,136 @@
+/* Estilos mínimos: la consigna no pide diseño visual elaborado */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  color: #222;
+  background: #f5f5f7;
+}
+
+.container {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+.container.narrow {
+  max-width: 400px;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: #1f2937;
+  color: white;
+}
+
+.navbar a {
+  color: #d1d5db;
+  text-decoration: none;
+}
+
+.navbar a.active {
+  color: white;
+  font-weight: bold;
+}
+
+.navbar .spacer {
+  flex: 1;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+input,
+textarea,
+select {
+  padding: 8px;
+  font: inherit;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  padding: 8px 14px;
+  font: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background: #2563eb;
+  color: white;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+button.danger {
+  background: #dc2626;
+}
+
+button.secondary {
+  background: #6b7280;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th,
+td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.85em;
+  color: white;
+}
+
+.badge.DISPONIBLE {
+  background: #16a34a;
+}
+
+.badge.SIN_STOCK {
+  background: #d97706;
+}
+
+.badge.DISCONTINUADO {
+  background: #6b7280;
+}
+
+.error {
+  color: #dc2626;
+}
+
+.hint {
+  color: #6b7280;
+  font-size: 0.9em;
+}
