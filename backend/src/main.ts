@@ -22,6 +22,11 @@ import { SubscriptionService } from "./services/SubscriptionService.ts";
 import { SubscriptionController } from "./controllers/SubscriptionController.ts";
 import { subscriptionRoutes } from "./routes/subscription.routes.ts";
 import { EventPublisher } from "./observer/EventPublisher.ts";
+import { NotificationRepository } from "./repositories/NotificationRepository.ts";
+import { NotifierFactory } from "./notifications/NotifierFactory.ts";
+import { NotificationService } from "./services/NotificationService.ts";
+import { NotificationController } from "./controllers/NotificationController.ts";
+import { notificationRoutes } from "./routes/notification.routes.ts";
 
 // Composition root: acá se crean todos los objetos de la aplicación y se conectan entre sí
 async function main() {
@@ -39,15 +44,28 @@ async function main() {
   const roleRepository = new RoleRepository();
   const productRepository = new ProductRepository();
   const subscriptionRepository = new SubscriptionRepository();
+  const notificationRepository = new NotificationRepository();
 
   // 3. Services: reciben los repositorios por constructor (inyección de dependencias)
   const authService = new AuthService(userRepository, roleRepository, env.jwtSecret);
   const userService = new UserService(userRepository, roleRepository);
-  // Patrón Observer: el Subject que avisa los cambios de estado de los productos.
-  // (Los observers se registran con eventPublisher.attach(...) en la etapa de notificaciones)
-  const eventPublisher = new EventPublisher();
-  const productService = new ProductService(productRepository, eventPublisher);
   const subscriptionService = new SubscriptionService(subscriptionRepository, productRepository);
+
+  // Notificaciones: los 4 patrones participan del cambio de estado
+  //   ProductService.changeStatus() → EventPublisher.notify()   (Observer - Subject)
+  //   → NotificationService.update()                            (Observer - Observer)
+  //   → canales creados por NotifierFactory                     (Factory)
+  //   → "console" es el ConsoleNotifierAdapter                  (Adapter)
+  const notifierFactory = new NotifierFactory(notificationRepository);
+  const notificationService = new NotificationService(
+    subscriptionRepository,
+    notificationRepository,
+    notifierFactory,
+    ["inapp", "console"], // canales por los que se notifica
+  );
+  const eventPublisher = new EventPublisher();
+  eventPublisher.attach(notificationService); // registrar el observer
+  const productService = new ProductService(productRepository, eventPublisher);
 
   // 4. Middleware de autenticación (usa el AuthService para validar el token)
   const authenticate = createAuthenticate(authService);
@@ -57,6 +75,7 @@ async function main() {
   const userController = new UserController(userService);
   const productController = new ProductController(productService);
   const subscriptionController = new SubscriptionController(subscriptionService);
+  const notificationController = new NotificationController(notificationService);
 
   // 6. Crear el servidor con sus rutas y ponerlo a escuchar
   const app = createApp({
@@ -64,6 +83,7 @@ async function main() {
     userRouter: userRoutes(userController, authenticate),
     productRouter: productRoutes(productController, authenticate),
     subscriptionRouter: subscriptionRoutes(subscriptionController, authenticate),
+    notificationRouter: notificationRoutes(notificationController, authenticate),
   });
   app.listen(env.apiPort, () => {
     console.log(`API escuchando en http://localhost:${env.apiPort}/api`);

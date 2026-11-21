@@ -9,6 +9,7 @@ export interface AppRouters {
   userRouter: Router;
   productRouter: Router;
   subscriptionRouter: Router;
+  notificationRouter: Router;
 }
 
 // Crea y configura el servidor Express
@@ -29,6 +30,7 @@ export function createApp(routers: AppRouters) {
   // productos exige token para todo lo que pasa por él
   app.use("/api/products", routers.subscriptionRouter);
   app.use("/api/products", routers.productRouter);
+  app.use("/api/notifications", routers.notificationRouter);
 
   // Siempre al final: atrapa los errores de todas las rutas anteriores
   app.use(errorHandler);
