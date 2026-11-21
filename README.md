@@ -6,8 +6,6 @@
 
 ## Integrantes
 - Galban, Leonel — LeoGalban
-- [Apellido, Nombre — usuario de GitHub]
-- [Apellido, Nombre — usuario de GitHub]
 
 ## Descripción
 Aplicación web full stack en TypeScript para gestionar los productos de una tienda. Los usuarios se registran, ven los productos y pueden suscribirse a ellos; cada vez que un producto cambia de estado (`DISPONIBLE`, `SIN_STOCK`, `DISCONTINUADO`), todos sus suscriptores reciben una notificación en su bandeja y se registra una línea en la consola del backend. El acceso a cada acción depende de los permisos del rol (admin, operador, usuario).
