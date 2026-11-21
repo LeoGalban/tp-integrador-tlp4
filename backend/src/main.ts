@@ -21,6 +21,7 @@ import { SubscriptionRepository } from "./repositories/SubscriptionRepository.ts
 import { SubscriptionService } from "./services/SubscriptionService.ts";
 import { SubscriptionController } from "./controllers/SubscriptionController.ts";
 import { subscriptionRoutes } from "./routes/subscription.routes.ts";
+import { EventPublisher } from "./observer/EventPublisher.ts";
 
 // Composition root: acá se crean todos los objetos de la aplicación y se conectan entre sí
 async function main() {
@@ -42,7 +43,10 @@ async function main() {
   // 3. Services: reciben los repositorios por constructor (inyección de dependencias)
   const authService = new AuthService(userRepository, roleRepository, env.jwtSecret);
   const userService = new UserService(userRepository, roleRepository);
-  const productService = new ProductService(productRepository);
+  // Patrón Observer: el Subject que avisa los cambios de estado de los productos.
+  // (Los observers se registran con eventPublisher.attach(...) en la etapa de notificaciones)
+  const eventPublisher = new EventPublisher();
+  const productService = new ProductService(productRepository, eventPublisher);
   const subscriptionService = new SubscriptionService(subscriptionRepository, productRepository);
 
   // 4. Middleware de autenticación (usa el AuthService para validar el token)

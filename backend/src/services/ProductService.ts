@@ -6,14 +6,18 @@ import type {
   UpdateProductData,
 } from "../repositories/interfaces/IProductRepository.ts";
 import type { ProductStatus } from "../types/product.ts";
+import type { ISubject } from "../observer/ISubject.ts";
 
 // Lógica de negocio de los productos (RF3).
-// No conoce Express ni Sequelize: depende de la interfaz IProductRepository.
+// No conoce Express ni Sequelize: depende de interfaces.
 export class ProductService {
   private readonly productRepository: IProductRepository;
+  // El Subject del patrón Observer (en main.ts se le pasa un EventPublisher)
+  private readonly eventPublisher: ISubject;
 
-  constructor(productRepository: IProductRepository) {
+  constructor(productRepository: IProductRepository, eventPublisher: ISubject) {
     this.productRepository = productRepository;
+    this.eventPublisher = eventPublisher;
   }
 
   list(): Promise<ProductData[]> {
@@ -40,8 +44,8 @@ export class ProductService {
     return updated;
   }
 
-  // Cambia el estado del producto (ej: DISPONIBLE → SIN_STOCK).
-  // Es el evento que, más adelante, dispara las notificaciones a los suscriptores.
+  // Cambia el estado del producto (ej: DISPONIBLE → SIN_STOCK)
+  // y avisa a los observers (patrón Observer).
   async changeStatus(id: number, newStatus: ProductStatus): Promise<ProductData> {
     const product = await this.getById(id); // lanza 404 si no existe
     const previousStatus = product.status;
@@ -54,6 +58,17 @@ export class ProductService {
     if (!updated) {
       throw new HttpError(404, "El producto no existe");
     }
+
+    // Publicar el evento. ProductService no sabe quién lo escucha
+    // (notificaciones, logs, etc.): solo conoce la interfaz ISubject.
+    await this.eventPublisher.notify({
+      productId: updated.id,
+      productName: updated.name,
+      previousStatus,
+      newStatus: updated.status,
+      changedAt: updated.updatedAt,
+    });
+
     return updated;
   }
 
