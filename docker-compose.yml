@@ -15,5 +15,20 @@ services:
       timeout: 5s
       retries: 10
 
+  backend:
+    build: ./backend
+    env_file: .env
+    environment:
+      # Dentro de la red de Docker la base se llama "db" (el nombre del servicio)
+      # y escucha en su puerto interno 5432
+      DB_HOST: db
+      DB_PORT: 5432
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    depends_on:
+      db:
+        condition: service_healthy # espera a que Postgres responda al healthcheck
+    init: true # para que "docker compose down" detenga el proceso de Node al instante
+
 volumes:
   db_data:
