@@ -8,6 +8,7 @@ export interface AppRouters {
   authRouter: Router;
   userRouter: Router;
   productRouter: Router;
+  subscriptionRouter: Router;
 }
 
 // Crea y configura el servidor Express
@@ -24,6 +25,9 @@ export function createApp(routers: AppRouters) {
 
   app.use("/api/auth", routers.authRouter);
   app.use("/api/users", routers.userRouter);
+  // Suscripciones antes que productos: comparten /api/products, y el router de
+  // productos exige token para todo lo que pasa por él
+  app.use("/api/products", routers.subscriptionRouter);
   app.use("/api/products", routers.productRouter);
 
   // Siempre al final: atrapa los errores de todas las rutas anteriores

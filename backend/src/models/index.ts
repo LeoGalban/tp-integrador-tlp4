@@ -2,6 +2,7 @@ import { Role } from "./Role.ts";
 import { Permission } from "./Permission.ts";
 import { User } from "./User.ts";
 import { Product } from "./Product.ts";
+import { Subscription } from "./Subscription.ts";
 
 // Relaciones entre tablas
 
@@ -12,4 +13,9 @@ Role.belongsToMany(Permission, { through: "role_permissions", as: "permissions" 
 // Cada usuario pertenece a un rol
 User.belongsTo(Role, { foreignKey: "roleId", as: "role" });
 
-export { Role, Permission, User, Product };
+// Cada suscripción une un usuario con un producto.
+// CASCADE: si se borra el producto o el usuario, se borran sus suscripciones.
+Subscription.belongsTo(User, { foreignKey: "userId", as: "user", onDelete: "CASCADE" });
+Subscription.belongsTo(Product, { foreignKey: "productId", as: "product", onDelete: "CASCADE" });
+
+export { Role, Permission, User, Product, Subscription };

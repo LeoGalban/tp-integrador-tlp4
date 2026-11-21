@@ -17,6 +17,10 @@ import { ProductRepository } from "./repositories/ProductRepository.ts";
 import { ProductService } from "./services/ProductService.ts";
 import { ProductController } from "./controllers/ProductController.ts";
 import { productRoutes } from "./routes/product.routes.ts";
+import { SubscriptionRepository } from "./repositories/SubscriptionRepository.ts";
+import { SubscriptionService } from "./services/SubscriptionService.ts";
+import { SubscriptionController } from "./controllers/SubscriptionController.ts";
+import { subscriptionRoutes } from "./routes/subscription.routes.ts";
 
 // Composition root: acá se crean todos los objetos de la aplicación y se conectan entre sí
 async function main() {
@@ -33,11 +37,13 @@ async function main() {
   const userRepository = new UserRepository();
   const roleRepository = new RoleRepository();
   const productRepository = new ProductRepository();
+  const subscriptionRepository = new SubscriptionRepository();
 
   // 3. Services: reciben los repositorios por constructor (inyección de dependencias)
   const authService = new AuthService(userRepository, roleRepository, env.jwtSecret);
   const userService = new UserService(userRepository, roleRepository);
   const productService = new ProductService(productRepository);
+  const subscriptionService = new SubscriptionService(subscriptionRepository, productRepository);
 
   // 4. Middleware de autenticación (usa el AuthService para validar el token)
   const authenticate = createAuthenticate(authService);
@@ -46,12 +52,14 @@ async function main() {
   const authController = new AuthController(authService);
   const userController = new UserController(userService);
   const productController = new ProductController(productService);
+  const subscriptionController = new SubscriptionController(subscriptionService);
 
   // 6. Crear el servidor con sus rutas y ponerlo a escuchar
   const app = createApp({
     authRouter: authRoutes(authController, authenticate),
     userRouter: userRoutes(userController, authenticate),
     productRouter: productRoutes(productController, authenticate),
+    subscriptionRouter: subscriptionRoutes(subscriptionController, authenticate),
   });
   app.listen(env.apiPort, () => {
     console.log(`API escuchando en http://localhost:${env.apiPort}/api`);
