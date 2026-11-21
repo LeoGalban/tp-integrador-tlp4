@@ -3,6 +3,7 @@ import { Permission } from "./Permission.ts";
 import { User } from "./User.ts";
 import { Product } from "./Product.ts";
 import { Subscription } from "./Subscription.ts";
+import { NotificationModel } from "./Notification.ts";
 
 // Relaciones entre tablas
 
@@ -18,4 +19,7 @@ User.belongsTo(Role, { foreignKey: "roleId", as: "role" });
 Subscription.belongsTo(User, { foreignKey: "userId", as: "user", onDelete: "CASCADE" });
 Subscription.belongsTo(Product, { foreignKey: "productId", as: "product", onDelete: "CASCADE" });
 
-export { Role, Permission, User, Product, Subscription };
+// Cada notificación pertenece a un usuario (si se borra el usuario, se borra su bandeja)
+NotificationModel.belongsTo(User, { foreignKey: "userId", as: "user", onDelete: "CASCADE" });
+
+export { Role, Permission, User, Product, Subscription, NotificationModel };
