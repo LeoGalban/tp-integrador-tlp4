@@ -30,5 +30,17 @@ services:
         condition: service_healthy # espera a que Postgres responda al healthcheck
     init: true # para que "docker compose down" detenga el proceso de Node al instante
 
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # La usa el NAVEGADOR (que corre fuera de Docker), por eso es localhost y no "backend"
+        VITE_API_URL: ${VITE_API_URL}
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    init: true
+
 volumes:
   db_data:

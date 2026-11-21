@@ -64,7 +64,10 @@ select {
   border-radius: 4px;
 }
 
-button {
+button,
+a.button {
+  display: inline-block;
+  text-decoration: none;
   padding: 8px 14px;
   font: inherit;
   cursor: pointer;
@@ -83,8 +86,46 @@ button.danger {
   background: #dc2626;
 }
 
-button.secondary {
+button.secondary,
+a.button.secondary {
   background: #6b7280;
+}
+
+/* Campanita de notificaciones */
+.bell {
+  position: relative;
+  font-size: 1.2em;
+}
+
+.bell-count {
+  margin-left: 2px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: #dc2626;
+  color: white;
+  font-size: 0.7em;
+  font-weight: bold;
+}
+
+/* Bandeja de notificaciones */
+.notifications {
+  list-style: none;
+  padding: 0;
+}
+
+.notifications li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: white;
+  border-left: 4px solid #2563eb;
+}
+
+.notifications li.read {
+  border-left-color: #d1d5db;
+  opacity: 0.7;
 }
 
 table {

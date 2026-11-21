@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { getProducts } from "../api/products.api";
 import { formatPrice } from "../utils/format";
+import { Can } from "../components/Can";
 import type { Product } from "../types";
 
 export function ProductListPage() {
@@ -22,6 +23,14 @@ export function ProductListPage() {
   return (
     <div className="container">
       <h1>Productos</h1>
+
+      <Can permission="producto:create">
+        <p>
+          <Link to="/products/new" className="button">
+            + Nuevo producto
+          </Link>
+        </p>
+      </Can>
 
       {products.length === 0 ? (
         <p>Todavía no hay productos cargados.</p>
